@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>カラーコード生成器</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .color-box {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .swatch {
+      width: 100px;
+      height: 50px;
+      border: 1px solid #000;
+      margin-right: 10px;
+    }
+    .code {
+      font-family: monospace;
+      font-size: 1.2em;
+      background: #f0f0f0;
+      padding: 6px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: all;
+    }
+    select {
+      font-size: 1em;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>ランダムカラーコード生成器</h1>
+
+  <label for="colorGroup">🎨 色の系統を選ぶ：</label>
+  <select id="colorGroup">
+    <option value="all">全部</option>
+    <option value="red">赤系</option>
+    <option value="green">緑系</option>
+    <option value="blue">青系</option>
+  </select>
+
+  <div id="colors"></div>
+
+  <p>📋 コピー用（1行）:</p>
+  <div class="code" id="copyText" onclick="copyToClipboard()">クリックでコピー</div>
+
+  <button onclick="generateColors()">🎲 新しいカラーを生成</button>
+
+  <script>
+    function getRandomColor(group) {
+      let r, g, b;
+
+      switch (group) {
+        case 'red':
+          r = Math.floor(200 + Math.random() * 56);
+          g = Math.floor(Math.random() * 100);
+          b = Math.floor(Math.random() * 100);
+          break;
+        case 'green':
+          r = Math.floor(Math.random() * 100);
+          g = Math.floor(200 + Math.random() * 56);
+          b = Math.floor(Math.random() * 100);
+          break;
+        case 'blue':
+          r = Math.floor(Math.random() * 100);
+          g = Math.floor(Math.random() * 100);
+          b = Math.floor(200 + Math.random() * 56);
+          break;
+        default:
+          r = Math.floor(Math.random() * 256);
+          g = Math.floor(Math.random() * 256);
+          b = Math.floor(Math.random() * 256);
+      }
+
+      return (
+        '#' +
+        [r, g, b]
+          .map((x) => x.toString(16).padStart(2, '0'))
+          .join('')
+          .toUpperCase()
+      );
+    }
+
+    function generateColors() {
+      const group = document.getElementById('colorGroup').value;
+      const colors = [
+        getRandomColor(group),
+        getRandomColor(group),
+        getRandomColor(group),
+      ];
+      const colorsDiv = document.getElementById('colors');
+      const copyText = document.getElementById('copyText');
+
+      colorsDiv.innerHTML = '';
+      colors.forEach((code) => {
+        const box = document.createElement('div');
+        box.className = 'color-box';
+        box.innerHTML = `<div class="swatch" style="background:${code}"></div><div class="code" onclick="copySingle('${code}')">${code}</div>`;
+        colorsDiv.appendChild(box);
+      });
+
+      copyText.textContent = colors.join('');
+    }
+
+    function copyToClipboard() {
+      const text = document.getElementById('copyText').textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('コピーしました！');
+      });
+    }
+
+    function copySingle(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        alert(`コピー：${code}`);
+      });
+    }
+
+    generateColors();
+  </script>
+</body>
+</html>
